@@ -1,0 +1,380 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>色彩ラボ 第2回</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: projection-first lab bench (color series: neutral slate UI so the stimulus colors carry the meaning). Sticky header with one tab per demo; each demo = task area (left) + notes (right). */
+:root{
+  --bg:#f3f3f5; --panel:#ffffff; --ink:#1d2029; --muted:#5f6370; --line:#dcdde3;
+  --accent:#3d4f7c; --accent-ink:#ffffff; --ref:#b8741a; --soft:#e6e9f2; --soft2:#f7efe2;
+  --good:#2e7d4f; --bad:#b83a3a; --cell:#d3d5dd; --cell2:#a3a7b5;
+  --f-head:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  --f-body:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#15161a; --panel:#1e2027; --ink:#e7e8ee; --muted:#9a9eab; --line:#30333d;
+  --accent:#9fb2e3; --accent-ink:#141a2a; --ref:#e3a44c; --soft:#232a3d; --soft2:#33291b;
+  --good:#6cc493; --bad:#ef7d7d; --cell:#3a3d48; --cell2:#5f6372; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15161a; --panel:#1e2027; --ink:#e7e8ee; --muted:#9a9eab; --line:#30333d;
+  --accent:#9fb2e3; --accent-ink:#141a2a; --ref:#e3a44c; --soft:#232a3d; --soft2:#33291b;
+  --good:#6cc493; --bad:#ef7d7d; --cell:#3a3d48; --cell2:#5f6372; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.7}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.hrow{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 18px;padding-block:14px 6px}
+h1{font-family:var(--f-head);font-weight:900;font-size:1.4rem;margin:0;letter-spacing:.02em}
+h1 small{font-family:var(--f-num);font-weight:600;font-size:.8rem;color:var(--accent);margin-right:8px;letter-spacing:.04em}
+.sub{color:var(--muted);font-size:.85rem}
+nav{display:flex;gap:4px;overflow-x:auto}
+nav button{font:inherit;font-size:.9rem;border:0;background:none;color:var(--muted);padding:8px 12px 10px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav button b{font-family:var(--f-num);font-weight:600;margin-right:6px;font-size:.8rem}
+nav button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{padding-block:22px 48px}
+section.tab{display:flex;flex-direction:column;gap:18px}
+.lead h2{font-family:var(--f-head);font-weight:900;font-size:1.55rem;margin:0 0 4px;text-wrap:balance}
+.lead p{margin:0;max-width:64em;color:var(--muted)}
+.eyebrow{font-size:.75rem;letter-spacing:.08em;color:var(--accent);font-weight:700}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+@media (max-width:920px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
+.panel h3{font-family:var(--f-head);font-size:.95rem;margin:0 0 8px;font-weight:700}
+.col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{font:inherit;font-size:.85rem;padding:6px 12px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.btn.big{font-size:1.05rem;padding:12px 22px;font-weight:700}
+.btn[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);font-weight:700}
+.btns{display:flex;flex-wrap:wrap;gap:6px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+.tile .k{font-size:.76rem;color:var(--muted);line-height:1.4}
+.tile .v{font-family:var(--f-num);font-size:1.45rem;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.3}
+.tile .d{font-family:var(--f-num);font-size:.74rem;color:var(--muted)}
+.points{background:var(--soft);border-radius:10px;padding:14px 16px}
+.points h3{font-family:var(--f-head);font-size:.95rem;margin:0 0 4px}
+.points ul,.points ol{margin:0;padding-left:1.2em}
+.points p{margin:0 0 6px}
+.ref{background:var(--soft2);border-radius:10px;padding:14px 16px}
+.ref h3{font-family:var(--f-head);font-size:.95rem;margin:0 0 4px;color:var(--ref)}
+.ref p,.ref ul{margin:0 0 4px}
+.ref ul{padding-left:1.2em}
+.src{font-size:.75rem;color:var(--muted);line-height:1.6;margin:0}
+.note{font-size:.78rem;color:var(--muted)}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;font-size:.82rem;width:100%}
+td,th{padding:5px 7px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:500}
+td.n,th.n{text-align:right;font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:10px;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;text-align:center;position:relative}
+.stim{font-family:var(--f-head);font-weight:700;font-size:clamp(1.5rem,4.5vw,2.6rem);line-height:1.3;min-height:1.4em}
+.fix{font-family:var(--f-num);font-size:2rem;color:var(--muted)}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys .btn{min-width:150px}
+kbd{font-family:var(--f-num);font-size:.8rem;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--bg)}
+.prog{height:4px;background:var(--line);border-radius:2px;width:100%;max-width:420px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--accent);width:0}
+.fb{font-size:.9rem;min-height:1.6em;font-weight:700}
+.fb.ok{color:var(--good)} .fb.ng{color:var(--bad)}
+svg.chart{width:100%;height:auto;display:block;font-family:var(--f-num);font-size:11px}
+svg.chart .ax{stroke:var(--muted);stroke-width:1}
+svg.chart .gr{stroke:var(--line);stroke-width:1}
+svg.chart text{fill:var(--muted)}
+svg.chart .lab{fill:var(--ink);font-family:var(--f-body);font-size:12px}
+.s-you{stroke:var(--accent);fill:var(--accent)}
+.s-ref{stroke:var(--ref);fill:var(--ref)}
+.s-alt{stroke:var(--ink);fill:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.8rem;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:14px;height:3px;margin-right:6px;vertical-align:middle;background:currentColor}
+.legend .you{color:var(--accent)} .legend .refc{color:var(--ref)} .legend .alt{color:var(--ink)}
+textarea,input[type=text],input[type=number],select{font:inherit;font-size:.9rem;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);padding:6px 8px;width:100%}
+textarea{min-height:120px;resize:vertical}
+input[type=range]{width:100%;accent-color:var(--accent)}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:.82rem;color:var(--muted)}
+.likert{display:flex;gap:6px;flex-wrap:wrap}
+.likert button{font:inherit;font-family:var(--f-num);width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.likert button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.steps{display:flex;gap:6px;flex-wrap:wrap;font-size:.78rem}
+.steps span{padding:3px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.steps span.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.steps span.done{color:var(--ink)}
+.chip{display:inline-block;font-size:.75rem;padding:1px 8px;border-radius:999px;background:var(--soft);color:var(--accent);font-weight:700}
+.chip.r{background:var(--soft2);color:var(--ref)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+
+.ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 16px}
+.ctl output{font-family:var(--f-num);color:var(--ink);font-weight:600}
+svg.chart .red{fill:#c8323a;stroke:#c8323a}
+svg.chart .blu{fill:#2f5fb0;stroke:#2f5fb0}
+.poker{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:center}
+@media (max-width:640px){.poker{grid-template-columns:minmax(0,1fr)}}
+.chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.chip3{width:44px;height:44px;border-radius:50%;border:5px dashed rgba(255,255,255,.7);box-shadow:0 0 0 2px var(--ink)}
+.meter{height:16px;background:var(--bg);border-radius:8px;position:relative;overflow:hidden;border:1px solid var(--line)}
+.meter i{position:absolute;top:0;bottom:0;background:var(--accent)}
+.meter b{position:absolute;left:50%;top:-2px;bottom:-2px;width:2px;background:var(--ink)}
+.cell2{display:grid;grid-template-columns:auto repeat(2,minmax(0,1fr));gap:4px;font-size:.84rem}
+.cell2 div{padding:8px;border-radius:6px;background:var(--bg);text-align:center}
+.cell2 .on{outline:2px solid var(--accent);font-weight:700}
+.cell2 .h{background:none;color:var(--muted);font-weight:700}
+.mech td.ok{color:var(--good);font-weight:700;text-align:center}
+.mech td.no{color:var(--muted);text-align:center}
+.path{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center}
+.path .nd{padding:10px 12px;border-radius:8px;background:var(--bg);border:1px solid var(--line);font-weight:700;font-size:.88rem;text-align:center;min-width:110px}
+.path .ar{color:var(--muted);font-family:var(--f-num)}
+.path .nd.hot{border-color:var(--accent);background:var(--soft)}
+.swc{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:4px;border:1px solid var(--line)}
+</style>
+
+<header>
+  <div class="wrap">
+    <div class="hrow"><h1><small>COLOR 2</small>色彩ラボ 第2回</h1><span class="sub">達成場面の色：Elliot &amp; Maier (2014) Color in Achievement Contexts</span></div>
+    <nav role="tablist" aria-label="デモの切り替え">
+      <button role="tab" data-t="sim" aria-selected="true"><b>A</b>赤と青の試合シミュレーション</button>
+      <button role="tab" data-t="pok" aria-selected="false"><b>B</b>着る赤と見る赤</button>
+      <button role="tab" data-t="task" aria-selected="false"><b>C</b>課題と色</button>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+
+<section class="tab" id="sim" role="tabpanel">
+  <div class="lead"><div class="eyebrow">デモ A ／ 体験1「赤と青、どちらが勝つ？」</div>
+    <h2>赤のごく小さな有利は、どんな試合で見えるか</h2>
+    <p>実力の違う2人（2チーム）の試合を、コンピュータの中で何千回も行います。赤に小さな有利を与えたとき、赤の勝率がどの試合で上がるかを見ます。「チームが色を選ぶ」に切り替えると、赤に効果がなくても赤が勝つように見える場合があることを確かめます。</p></div>
+  <div class="grid">
+    <div class="col">
+      <div class="panel">
+        <div class="btns"><button class="btn" id="m1" aria-pressed="true">色をランダムに割り当て（五輪の格闘技）</button><button class="btn" id="m2" aria-pressed="false">チームが色を選ぶ（サッカーなど）</button></div>
+        <div class="ctl" style="margin-top:12px">
+          <label class="f">赤の有利（実力の標準偏差を単位） <output id="oD">0.20</output><input type="range" id="sD" min="0" max="0.5" step="0.05" value="0.2"></label>
+          <label class="f" id="lT" hidden>強いチームが赤を選ぶ傾向 <output id="oT">0.6</output><input type="range" id="sT" min="0" max="1" step="0.1" value="0.6"></label>
+          <label class="f">試合数<select id="sN"><option value="2000">2,000試合</option><option value="10000" selected>10,000試合</option><option value="50000">50,000試合</option></select></label>
+        </div>
+        <div class="row" style="margin-top:10px"><button class="btn primary" id="go">試合を行う</button><span class="note" id="msg"></span></div>
+      </div>
+      <div class="panel"><h3 id="chT">実力差ごとの赤の勝率</h3><svg class="chart" id="ch"></svg><div class="tiles" id="tl"></div></div>
+    </div>
+    <div class="col">
+      <div class="ref"><h3>総説で紹介された研究</h3>
+        <ul><li>2004年アテネ五輪の格闘技4競技：赤のウェアをランダムに割り当てられた選手が、青より勝ちやすい。特に男性、<b>実力が拮抗した試合</b>で（Hill &amp; Barton 2005）</li>
+          <li>サッカーやラグビーでは結果がまちまち。イングランドの新しいデータでは、ホームゲームで実力をそろえると効果が消えた</li>
+          <li>サッカーのように色がランダムに決まらない場合は、伝統あるクラブが赤を使っているだけかもしれない（交絡）</li></ul></div>
+      <div class="points"><h3>見てほしいこと</h3>
+        <ol><li>ランダム割り当て：赤の勝率が上がるのは、実力差の<b>小さい</b>試合</li><li>赤の有利を 0 にすると、どの試合でも 50% 前後になる</li><li>チームが色を選ぶ：赤の有利を 0 にしても、全体では赤が勝ち越す。実力がそろった試合だけで比べると？</li></ol>
+        <p class="note" style="margin-top:6px">勝敗のモデル（実力差＋赤の有利＋偶然）とパラメータは講師が設定した模式です。原典は具体的な勝率を総説で示していません。</p></div>
+      <p class="src">Elliot &amp; Maier (2014), p.101–102。Hill &amp; Barton (2005)、Barton &amp; Hill (2005)、Attrill et al. (2008)、Allen &amp; Jones (2013) ほか。</p>
+    </div>
+  </div>
+</section>
+
+<section class="tab" id="pok" role="tabpanel" hidden>
+  <div class="lead"><div class="eyebrow">デモ B ／ 着る赤と見る赤・4つの説明</div>
+    <h2>同じ赤が、誰の側にあるかで逆に働く</h2>
+    <p>上はポーカーの実験（Ten Velden et al., 2012）の結果の向きを、自分と相手のチップの色の組み合わせで示します。下では、赤が勝つ理由の4つの説明が、どんな条件で有利を予測するかを比べ、それらを見分ける実験を考えます。</p></div>
+  <div class="grid">
+    <div class="col">
+      <div class="panel">
+        <div class="poker">
+          <div class="col" style="align-items:center"><h3>自分のチップ</h3><div class="chips" id="myC"></div><div class="btns"><button class="btn" data-me="r">赤</button><button class="btn" data-me="b">青</button></div></div>
+          <div class="col" style="align-items:center"><h3>相手のチップ</h3><div class="chips" id="opC"></div><div class="btns"><button class="btn" data-op="r">赤</button><button class="btn" data-op="b">青</button></div></div>
+        </div>
+        <div class="col" style="margin-top:14px">
+          <div><div class="row" style="justify-content:space-between"><b>自分が優位だと感じる</b><span class="note" id="t1"></span></div><div class="meter"><b></b><i id="g1"></i></div></div>
+          <div><div class="row" style="justify-content:space-between"><b>賭ける量</b><span class="note" id="t2"></span></div><div class="meter"><b></b><i id="g2"></i></div></div>
+          <p class="note" style="margin:0">中央の線＝両方とも青のとき。結果の<b>向き</b>だけを示す模式で、大きさは原典の値ではありません。</p>
+        </div>
+        <div class="cell2" id="grid2" style="margin-top:10px"></div>
+      </div>
+      <div class="panel"><h3>4つの説明を見分ける：どの条件で「赤の有利」が残ると予測するか</h3>
+        <div class="btns" id="conds"></div>
+        <div class="tbl" style="margin-top:8px"><table class="mech" id="mech"></table></div>
+        <p class="note" style="margin:6px 0 0">○＝この条件でも赤の有利を予測する。予測は講師が各説明から論理的に導いたもので、原典の結果ではありません。</p></div>
+    </div>
+    <div class="col">
+      <div class="ref"><h3>総説の記述</h3>
+        <ul><li>赤い服の相手は、より優位・威圧的・攻撃的に見える（見る側）</li><li>赤（対 青）のチップでプレーすると、優位だと感じて賭けが増える。赤のチップの相手と対戦すると、逆の知覚と行動が見られた（Ten Velden et al. 2012）</li>
+          <li>ほかの説明：赤の目立ちやすさ、審判のバイアス。これらは対立ではなく<b>補い合う</b>ものと見ることもできる</li></ul></div>
+      <div class="points"><h3>授業での使い方</h3><ol><li>4つの組み合わせを順に見せ、向きを予想させる</li><li>「審判がいない」「相手から見えない」などの条件を切り替え、どの説明が残るかを確かめる</li><li>グループで「説明を1つに絞る実験」を考える</li></ol></div>
+      <p class="src">Elliot &amp; Maier (2014), p.102（Feltman &amp; Elliot 2011、Ten Velden et al. 2012、Rowe et al. 2005、Hagemann et al. 2008）。</p>
+    </div>
+  </div>
+</section>
+
+<section class="tab" id="task" role="tabpanel" hidden>
+  <div class="lead"><div class="eyebrow">デモ C ／ 体験3「その課題には何色がいい？」</div>
+    <h2>赤は成績を下げる、とは限らない</h2>
+    <p>課題と色を選び、成績がどうなるかを予想してから、総説で紹介された研究の結果を表示します。色から成績までを「動機づけ」と「処理のしかた」でつないだ道すじも示します。</p></div>
+  <div class="grid">
+    <div class="col">
+      <div class="panel">
+        <div class="col"><div><b>課題</b><div class="btns" id="tk" style="margin-top:4px"></div></div><div><b>課題の前・最中に見る色</b><div class="btns" id="tc" style="margin-top:4px"></div></div>
+          <div><b>あなたの予想（統制条件と比べて）</b><div class="btns" id="tp" style="margin-top:4px"></div></div></div>
+        <div class="path" id="path" style="margin-top:14px"></div>
+        <div class="verdict" id="tv" style="margin-top:10px;border-radius:8px;padding:10px 14px;background:var(--bg)"></div>
+      </div>
+      <div class="panel"><h3>効果の出やすさを左右する条件</h3>
+        <div class="ctl"><label class="f">課題の難しさ<select id="mD"><option value="0">やさしすぎる</option><option value="1" selected>適度に難しい</option><option value="2">難しすぎる</option></select></label>
+          <label class="f">能力の評価の目立ち方<select id="mE"><option value="0">ほとんどない</option><option value="1" selected>適度に目立つ</option><option value="2">非常に強い</option></select></label>
+          <label class="f">色の見せ方<select id="mS"><option value="0" selected>課題の表紙・画面（短時間）</option><option value="1">壁の色（環境色・長時間）</option></select></label></div>
+        <div style="margin-top:10px"><div class="row" style="justify-content:space-between"><b>効果の出やすさ（模式）</b><span class="note" id="mT"></span></div><div class="meter"><i id="mG" style="left:0"></i></div></div></div>
+    </div>
+    <div class="col">
+      <div class="ref"><h3>総説のポイント</h3>
+        <ul><li>難しい知的課題の前に赤を見ると、緑・灰色などより成績が下がる（回避の動機づけが媒介するというデータも）</li>
+          <li>回避は、細部に注意し操作の少ない課題をむしろ助ける：赤は校正のような課題で有利（Mehta &amp; Zhu 2009）</li><li>青・緑は創造性の課題に有利という報告</li>
+          <li>運動課題でも、課題によって赤の効果は逆になる</li><li>効果は、課題の難しさ、評価の目立ち方、個人の特徴で変わる。壁の色では見られなかった研究も（Küller et al. 2009）</li></ul></div>
+      <div class="points"><h3>授業での使い方</h3><ol><li>体験3の予想を、課題ごとに入力する</li><li>結果と道すじを表示し、「接近」「回避」で説明する</li><li>下の条件を変え、「赤の効果がない」研究がなぜ出るかを考える</li></ol>
+        <p class="note" style="margin-top:6px">「効果の出やすさ」は、総説の記述（適度に難しい課題・適度に目立つ評価で最も強い）を講師が模式化したものです。</p></div>
+      <p class="src">Elliot &amp; Maier (2014), p.102–104。Mehta &amp; Zhu (2009)、Lichtenfeld et al. (2012)、Küller et al. (2009)、Larionescu &amp; Pantelimona (2012)、Sorokowski &amp; Szmajke (2011)、Elliot &amp; Aarts (2011)、Williams et al. (2011)、Payen et al. (2011)。</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+// ---- common ----
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const mean=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:NaN;
+const fmt=(x,d=0)=>Number.isFinite(x)?x.toFixed(d):'—';
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs={},parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function linreg(pts){const n=pts.length;if(n<2)return null;const mx=mean(pts.map(p=>p[0])),my=mean(pts.map(p=>p[1]));let sxy=0,sxx=0;for(const[x,y]of pts){sxy+=(x-mx)*(y-my);sxx+=(x-mx)**2}if(!sxx)return null;const b=sxy/sxx;return{a:my-b*mx,b}}
+// chart(svg,{W,H,xd,yd,xt,yt,xl,yl,xfmt,series:[{pts,cls,line,dots,dash,r}]})
+function chart(svg,o){
+  const W=o.W||520,H=o.H||300,m={l:56,r:16,t:16,b:44};svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML='';
+  const X=v=>m.l+(v-o.xd[0])/(o.xd[1]-o.xd[0])*(W-m.l-m.r), Y=v=>H-m.b-(v-o.yd[0])/(o.yd[1]-o.yd[0])*(H-m.t-m.b);
+  for(const t of o.yt){el('line',{x1:m.l,x2:W-m.r,y1:Y(t),y2:Y(t),class:'gr'},svg);el('text',{x:m.l-6,y:Y(t)+4,'text-anchor':'end'},svg).textContent=(o.yfmt||String)(t)}
+  for(const t of o.xt){el('text',{x:X(t),y:H-m.b+16,'text-anchor':'middle'},svg).textContent=(o.xfmt||String)(t)}
+  el('line',{x1:m.l,x2:W-m.r,y1:H-m.b,y2:H-m.b,class:'ax'},svg);el('line',{x1:m.l,x2:m.l,y1:m.t,y2:H-m.b,class:'ax'},svg);
+  if(o.xl)el('text',{x:(m.l+W-m.r)/2,y:H-6,'text-anchor':'middle',class:'lab'},svg).textContent=o.xl;
+  if(o.yl){const t=el('text',{x:14,y:(m.t+H-m.b)/2,'text-anchor':'middle',class:'lab',transform:`rotate(-90 14 ${(m.t+H-m.b)/2})`},svg);t.textContent=o.yl}
+  for(const s of o.series){
+    const pts=s.pts.filter(p=>Number.isFinite(p[1]));
+    if(s.line&&pts.length>1){el('polyline',{points:pts.map(p=>X(p[0])+','+Y(p[1])).join(' '),class:s.cls,fill:'none','stroke-width':s.w||2.5,'stroke-dasharray':s.dash||'','stroke-opacity':s.sop||1,style:'fill:none'},svg)}
+    if(s.dots!==false)for(const p of pts){const c=el('circle',{cx:X(p[0]),cy:Y(p[1]),r:s.r||4,class:s.cls,'fill-opacity':s.op||1,style:'stroke:none'},svg)}
+    if(s.labels)for(const p of pts){el('text',{x:X(p[0])+7,y:Y(p[1])-6,class:s.cls,style:'stroke:none;font-size:11px'},svg).textContent=s.labels(p)}
+  }
+  return {X,Y};
+}
+function bars(svg,o){ // o:{W,H,cats,groups:[{name,cls,vals}],yd,yt,yl}
+  const W=o.W||520,H=o.H||280,m={l:56,r:16,t:16,b:44};svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML='';
+  const Y=v=>H-m.b-(v-o.yd[0])/(o.yd[1]-o.yd[0])*(H-m.t-m.b);const cw=(W-m.l-m.r)/o.cats.length,g=o.groups.length,bw=Math.min(46,cw*0.7/g);
+  for(const t of o.yt){el('line',{x1:m.l,x2:W-m.r,y1:Y(t),y2:Y(t),class:'gr'},svg);el('text',{x:m.l-6,y:Y(t)+4,'text-anchor':'end'},svg).textContent=(o.yfmt||String)(t)}
+  o.cats.forEach((c,i)=>{const cx=m.l+cw*(i+.5);el('text',{x:cx,y:H-m.b+16,'text-anchor':'middle',class:'lab'},svg).textContent=c;
+    o.groups.forEach((gr,j)=>{const v=gr.vals[i];if(!Number.isFinite(v))return;const x=cx-g*bw/2+j*bw+2;el('rect',{x,y:Y(Math.max(v,o.yd[0])),width:bw-4,height:Math.max(0,Y(o.yd[0])-Y(v)),class:gr.cls,style:'stroke:none'},svg);
+      el('text',{x:x+(bw-4)/2,y:Y(v)-4,'text-anchor':'middle',class:gr.cls,style:'stroke:none'},svg).textContent=(o.vfmt||(v=>fmt(v,0)))(v)})});
+  el('line',{x1:m.l,x2:W-m.r,y1:Y(o.yd[0]),y2:Y(o.yd[0]),class:'ax'},svg);
+  if(o.yl){const t=el('text',{x:14,y:(m.t+H-m.b)/2,'text-anchor':'middle',class:'lab',transform:`rotate(-90 14 ${(m.t+H-m.b)/2})`},svg);t.textContent=o.yl}
+}
+function copyText(btn,text){const done=()=>{const o=btn.textContent;btn.textContent='コピーしました';setTimeout(()=>btn.textContent=o,1500)};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done,()=>fallback())}else fallback();
+  function fallback(){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done()}catch(e){}ta.remove()}}
+
+// ---- color utilities (sRGB D65 <-> CIELAB / LCh) ----
+const CU=(()=>{
+  const Xn=0.95047,Yn=1,Zn=1.08883;
+  const lin=c=>c<=0.04045?c/12.92:Math.pow((c+0.055)/1.055,2.4), gam=c=>c<=0.0031308?12.92*c:1.055*Math.pow(c,1/2.4)-0.055;
+  function rgb2lab([r,g,b]){[r,g,b]=[r,g,b].map(v=>lin(v/255));const X=(0.4124*r+0.3576*g+0.1805*b)/Xn,Y=(0.2126*r+0.7152*g+0.0722*b)/Yn,Z=(0.0193*r+0.1192*g+0.9505*b)/Zn;
+    const f=t=>t>216/24389?Math.cbrt(t):(24389/27*t+16)/116;const fx=f(X),fy=f(Y),fz=f(Z);return[116*fy-16,500*(fx-fy),200*(fy-fz)]}
+  function lab2rgb([L,a,b]){const fy=(L+16)/116,fx=fy+a/500,fz=fy-b/200;const fi=t=>t**3>216/24389?t**3:(116*t-16)/(24389/27);
+    const X=fi(fx)*Xn,Y=fi(fy)*Yn,Z=fi(fz)*Zn;const r=3.2406*X-1.5372*Y-0.4986*Z,g=-0.9689*X+1.8758*Y+0.0415*Z,bb=0.0557*X-0.2040*Y+1.0570*Z;
+    const raw=[r,g,bb];const out=raw.some(v=>v<-0.002||v>1.002);return{rgb:raw.map(v=>Math.round(255*gam(Math.min(1,Math.max(0,v))))),out,lin:raw}}
+  const lch2lab=([L,C,h])=>[L,C*Math.cos(h*Math.PI/180),C*Math.sin(h*Math.PI/180)];
+  const lab2lch=([L,a,b])=>[L,Math.hypot(a,b),(Math.atan2(b,a)*180/Math.PI+360)%360];
+  const hex=rgb=>'#'+rgb.map(v=>v.toString(16).padStart(2,'0')).join('');
+  const fromHex=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+  const dE=(p,q)=>Math.hypot(p[0]-q[0],p[1]-q[1],p[2]-q[2]);
+  const linToRgb=l=>l.map(v=>Math.round(255*gam(Math.min(1,Math.max(0,v)))));
+  const rgbToLin=rgb=>rgb.map(v=>lin(v/255));
+  return{rgb2lab,lab2rgb,lch2lab,lab2lch,hex,fromHex,dE,linToRgb,rgbToLin,lch:(L,C,h)=>lab2rgb(lch2lab([L,C,h]))};
+})();
+// ================= A: match simulation =================
+const randn=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+let SM={mode:1};
+function setMode(m){SM.mode=m;$('#m1').setAttribute('aria-pressed',m===1?'true':'false');$('#m2').setAttribute('aria-pressed',m===2?'true':'false');$('#lT').hidden=m!==2;
+  if(m===2){$('#sD').value=0;$('#oD').textContent='0.00'}else{$('#sD').value=.2;$('#oD').textContent='0.20'}run()}
+$('#m1').onclick=()=>setMode(1);$('#m2').onclick=()=>setMode(2);
+$('#sD').oninput=()=>$('#oD').textContent=(+$('#sD').value).toFixed(2);$('#sT').oninput=()=>$('#oT').textContent=(+$('#sT').value).toFixed(1);
+const BINS=[[0,.5,'0〜0.5'],[.5,1,'0.5〜1'],[1,1.5,'1〜1.5'],[1.5,99,'1.5以上']];
+function run(){
+  const d=+$('#sD').value,N=+$('#sN').value,T=+$('#sT').value;const t0=performance.now();
+  if(SM.mode===1){const w=BINS.map(()=>[0,0]);let tot=0;
+    for(let i=0;i<N;i++){const sr=randn(),sb=randn();const win=(sr-sb+d+randn())>0;const g=Math.abs(sr-sb);const k=BINS.findIndex(b=>g>=b[0]&&g<b[1]);w[k][0]+=win;w[k][1]++;tot+=win}
+    const rates=w.map(x=>x[0]/x[1]*100);$('#chT').textContent='実力差ごとの赤の勝率（色はランダムに割り当て）';
+    bars($('#ch'),{cats:BINS.map(b=>'実力差 '+b[2]),groups:[{name:'赤',cls:'red',vals:rates}],yd:[40,70],yt:[40,45,50,55,60,65,70],yl:'赤の勝率（%）',vfmt:v=>fmt(v,1)+'%'});
+    const svg=$('#ch');const H=280,m={t:16,b:44};const Y=v=>H-m.b-(v-40)/30*(H-m.t-m.b);el('line',{x1:56,x2:504,y1:Y(50),y2:Y(50),style:'stroke:var(--ink);stroke-dasharray:5 4'},svg);
+    $('#tl').innerHTML=`<div class="tile"><div class="k">全体の赤の勝率</div><div class="v">${fmt(tot/N*100,1)}%</div><div class="d">${N.toLocaleString()}試合</div></div><div class="tile"><div class="k">拮抗した試合（差 0.5 未満）</div><div class="v">${fmt(rates[0],1)}%</div><div class="d">${w[0][1].toLocaleString()}試合</div></div><div class="tile"><div class="k">実力差の大きい試合（1.5 以上）</div><div class="v">${fmt(rates[3],1)}%</div><div class="d">${w[3][1].toLocaleString()}試合</div></div>`;
+  }else{let rw=0,rn=0,cw=0,cn=0,strongRed=0,redTeams=0;
+    for(let i=0;i<N;i++){const a=randn(),b=randn();const pr=s=>Math.min(1,Math.max(0,.5+T*.5*Math.tanh(1.5*s)));const ra=Math.random()<pr(a),rb=Math.random()<pr(b);if(ra===rb)continue;
+      const sr=ra?a:b,so=ra?b:a;const win=(sr-so+d+randn())>0;rw+=win;rn++;redTeams++;if(sr>0)strongRed++;if(Math.abs(sr-so)<.25){cw+=win;cn++}}
+    const all=rw/rn*100,cl=cw/cn*100;$('#chT').textContent='赤のチームの勝率（片方だけが赤の試合）';
+    bars($('#ch'),{cats:['すべての試合','実力がそろった試合だけ（差 0.25 未満）'],groups:[{name:'赤',cls:'red',vals:[all,cl]}],yd:[40,70],yt:[40,45,50,55,60,65,70],yl:'赤の勝率（%）',vfmt:v=>fmt(v,1)+'%'});
+    const svg=$('#ch');const H=280,m={t:16,b:44};const Y=v=>H-m.b-(v-40)/30*(H-m.t-m.b);el('line',{x1:56,x2:504,y1:Y(50),y2:Y(50),style:'stroke:var(--ink);stroke-dasharray:5 4'},svg);
+    $('#tl').innerHTML=`<div class="tile"><div class="k">赤のチームの勝率（全体）</div><div class="v">${fmt(all,1)}%</div><div class="d">${rn.toLocaleString()}試合</div></div><div class="tile"><div class="k">実力がそろった試合だけ</div><div class="v">${fmt(cl,1)}%</div><div class="d">${cn.toLocaleString()}試合</div></div><div class="tile"><div class="k">赤のチームのうち実力が平均以上</div><div class="v">${fmt(strongRed/redTeams*100)}%</div><div class="d">色の選び方による偏り</div></div>`;}
+  $('#msg').textContent=`計算 ${fmt(performance.now()-t0)} ms。もう一度押すと、偶然による変動が見られます。`;
+}
+$('#go').onclick=run;run();
+
+// ================= B: poker & mechanisms =================
+const RED='#c8323a',BLU='#2f5fb0';let PK={me:'r',op:'b'};
+function pkDraw(){$('#myC').innerHTML=Array(4).fill(`<span class="chip3" style="background:${PK.me==='r'?RED:BLU}"></span>`).join('');$('#opC').innerHTML=Array(4).fill(`<span class="chip3" style="background:${PK.op==='r'?RED:BLU}"></span>`).join('');
+  $$('[data-me]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.me===PK.me?'true':'false'));$$('[data-op]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.op===PK.op?'true':'false'));
+  const v=(PK.me==='r'?1:0)-(PK.op==='r'?1:0);const set=(g,t)=>{const w=Math.abs(v)*30;$(g).style.left=(v>=0?50:50-w)+'%';$(g).style.width=w+'%';$(t).textContent=v>0?'高まる':v<0?'下がる':'変わらない（基準）'};set('#g1','#t1');set('#g2','#t2');
+  const cell=(m,o)=>{const x=(m==='r'?1:0)-(o==='r'?1:0);return x>0?'優位感↑ 賭け↑':x<0?'優位感↓ 賭け↓':m==='r'?'打ち消し合う？':'基準'};
+  $('#grid2').innerHTML='<div class="h"></div><div class="h">相手：赤</div><div class="h">相手：青</div>'+['r','b'].map(m=>`<div class="h">自分：${m==='r'?'赤':'青'}</div>`+['r','b'].map(o=>`<div class="${PK.me===m&&PK.op===o?'on':''}">${cell(m,o)}</div>`).join('')).join('')+'<div class="h"></div><div class="h" style="grid-column:span 2;font-weight:400">原典で比べたのは、自分または相手のチップが赤か青か。「両方とも赤」は講師による推測</div>';}
+$$('[data-me]').forEach(b=>b.onclick=()=>{PK.me=b.dataset.me;pkDraw()});$$('[data-op]').forEach(b=>b.onclick=()=>{PK.op=b.dataset.op;pkDraw()});pkDraw();
+const MECH=[['① 着る側：赤を着ると自分が優位だと感じる',[1,1,0,1]],['② 見る側：赤の相手は威圧的に見え、相手が引く',[0,1,1,1]],['③ 目立ちやすさ：赤は動きが見えやすい',[0,1,1,0]],['④ 審判のバイアス：審判が赤に有利な判定をする',[1,0,1,1]]];
+const CONDS=['相手から自分の色が見えない','審判がいない（得点が客観的に決まる）','着ている本人は自分の色がわからない','色を暗くして目立たなくする'];
+let CI=-1;
+function mechDraw(){$('#conds').innerHTML=CONDS.map((c,i)=>`<button class="btn" data-c="${i}" aria-pressed="${CI===i}">${c}</button>`).join('');$$('#conds button').forEach(b=>b.onclick=()=>{CI=+b.dataset.c===CI?-1:+b.dataset.c;mechDraw()});
+  $('#mech').innerHTML='<tr><th>説明</th>'+CONDS.map((c,i)=>`<th class="n" style="${CI===i?'color:var(--accent);font-weight:700':''}">${c}</th>`).join('')+'</tr>'+MECH.map(([n,v])=>`<tr><td>${n}</td>${v.map((x,i)=>`<td class="${x?'ok':'no'}" style="${CI===i?'background:var(--soft)':''}">${x?'○':'×'}</td>`).join('')}</tr>`).join('')}
+mechDraw();
+
+// ================= C: task & color =================
+const TASKS=[{id:'hard',n:'難しい知的課題（類推・計算・アナグラム）',proc:'柔軟に考える・頭の中で操作する'},{id:'proof',n:'細部に注意する課題（校正）',proc:'細部に注意・操作が少ない'},{id:'crea',n:'創造性の課題（新しい使い道）',proc:'柔軟・広く考える'},
+  {id:'mot1',n:'よく練習した運動・射撃・すぐに出す筋力',proc:'すばやく力を出す'},{id:'mot2',n:'目標に向けた運動・遅れて出す筋力',proc:'ねらって調整する'}];
+const COLS=[['赤','#c8323a'],['青','#2f5fb0'],['緑','#2f8a4f'],['灰（統制）','#8a8d96']];
+const RES={hard:{赤:['down','緑・灰色を見た人より成績が低い（Elliot et al. 2007 ほか）']},proof:{赤:['up','青より成績が高い（Mehta & Zhu 2009）'],青:['down','赤より成績が低い（Mehta & Zhu 2009）']},
+  crea:{赤:['down','青より成績が低い（Mehta & Zhu 2009）'],青:['up','赤より成績が高い（Mehta & Zhu 2009）'],緑:['up','成績が高いという報告（Lichtenfeld et al. 2012）']},
+  mot1:{赤:['up','成績が上がるという報告（Larionescu & Pantelimona 2012、Sorokowski & Szmajke 2011、Elliot & Aarts 2011）']},mot2:{赤:['down','成績が下がるという報告（Williams et al. 2011、Payen et al. 2011）']}};
+const MOT={赤:'回避（失敗を避けたい）',青:'接近（速さ・開かれた考え）',緑:'接近？（研究は少ない）','灰（統制）':'—'};
+let TK={t:0,c:0,p:null,shown:false};
+function tkDraw(){const T=TASKS[TK.t],C=COLS[TK.c][0];
+  $('#tk').innerHTML=TASKS.map((x,i)=>`<button class="btn" data-i="${i}" aria-pressed="${i===TK.t}">${x.n}</button>`).join('');
+  $('#tc').innerHTML=COLS.map(([n,h],i)=>`<button class="btn" data-i="${i}" aria-pressed="${i===TK.c}"><span class="swc" style="background:${h}"></span>${n}</button>`).join('');
+  $('#tp').innerHTML=[['up','上がる'],['down','下がる'],['same','変わらない']].map(([k,n])=>`<button class="btn" data-k="${k}" aria-pressed="${TK.p===k}">${n}</button>`).join('')+'<button class="btn primary" id="tShow">結果を見る</button>';
+  $$('#tk button').forEach(b=>b.onclick=()=>{TK.t=+b.dataset.i;TK.p=null;TK.shown=false;tkDraw()});$$('#tc button').forEach(b=>b.onclick=()=>{TK.c=+b.dataset.i;TK.p=null;TK.shown=false;tkDraw()});
+  $$('#tp button[data-k]').forEach(b=>b.onclick=()=>{TK.p=b.dataset.k;tkDraw()});$('#tShow').onclick=()=>{TK.shown=true;tkDraw()};
+  const r=(RES[T.id]||{})[C];
+  $('#path').innerHTML=`<div class="nd" style="border-color:${COLS[TK.c][1]}">${C}を見る</div><span class="ar">→</span><div class="nd ${TK.shown&&r?'hot':''}">${MOT[C]}</div><span class="ar">→</span><div class="nd">${T.proc}</div><span class="ar">→</span><div class="nd ${TK.shown&&r?'hot':''}">${TK.shown?(r?(r[0]==='up'?'成績 ↑':'成績 ↓'):'？'):'成績 ？'}</div>`;
+  const v=$('#tv');if(!TK.shown){v.textContent='予想を選んで「結果を見る」を押してください。';return}
+  const lab={up:'上がる',down:'下がる',same:'変わらない'};
+  v.innerHTML=C==='灰（統制）'?'灰色は比較の基準（統制条件）です。ほかの色を選んで比べてください。':r?`<b>研究の結果：</b>${r[1]}。${TK.p?`あなたの予想は「${lab[TK.p]}」でした。`:''}`:'この組み合わせを直接調べた研究は、総説ではほとんど紹介されていません（研究が少ない）。';}
+tkDraw();
+function modDraw(){const d=+$('#mD').value,e=+$('#mE').value,s=+$('#mS').value;let v=(d===1?1:.35)*(e===1?1:e===2?.7:.3)*(s===0?1:.4);$('#mG').style.width=(v*100)+'%';
+  $('#mT').textContent=v>.8?'出やすい':v>.4?'やや出にくい':'出にくい（天井・床効果、慣れ など）'}
+['mD','mE','mS'].forEach(id=>$('#'+id).onchange=modDraw);modDraw();
+
+// tabs
+(function(){const tabs=$$('nav [role=tab]');const key='tab:'+document.title;
+  function show(t){tabs.forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t?'true':'false'));$$('section.tab').forEach(s=>s.hidden=s.id!==t);store.set(key,t);if(window.onTab)window.onTab(t)}
+  tabs.forEach(b=>b.addEventListener('click',()=>{show(b.dataset.t);if(location.hash!=='#'+b.dataset.t)history.replaceState(null,'','#'+b.dataset.t)}));
+  const h=location.hash.slice(1);show(tabs.some(b=>b.dataset.t===h)?h:store.get(key,tabs[0].dataset.t));
+  window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(tabs.some(b=>b.dataset.t===h))show(h)})})();
+
+</script>
+
+</body></html>
